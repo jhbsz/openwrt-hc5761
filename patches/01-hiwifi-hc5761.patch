@@ -202,7 +202,7 @@ Index: target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk
 +   kmod-usb-core kmod-usb-dwc2 kmod-usb2 kmod-usb-storage  \
 +   kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
 +   block-mount mountd kmod-fs-ext4 ppp-mod-pppoe e2fsprogs \
-+   kmod-ledtrig-usbdev fdisk
++   kmod-ledtrig-usbdev
 +endef
 +
 +define Profile/HiWiFi-HC5761/Description
