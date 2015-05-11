@@ -21,9 +21,6 @@ final: s_build_openwrt
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
-	@svn co svn://svn.openwrt.org/openwrt/packages/net/pptpd $(openwrt_dir)/package/pptpd
-	@svn co https://github.com/shadowsocks/shadowsocks-libev.git/tags/v1.6.2/openwrt $(openwrt_dir)/package/shadowsocks
-	@git clone https://github.com/rssnsj/proto-bridge.git -b master $(openwrt_dir)/package/proto-bridge
 	@cd $(openwrt_dir)/package; \
 	 [ -e rssnsj-packages ] || ln -s ../../packages rssnsj-packages; \
 	 [ -e rssnsj-feeds ] || git clone https://github.com/rssnsj/network-feeds.git rssnsj-feeds
@@ -40,7 +37,7 @@ s_hiwifi_patch: s_checkout_svn
 
 # 2. Checkout source code:
 s_checkout_svn: s_check_hostdeps
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r43594
+	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r45669
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
