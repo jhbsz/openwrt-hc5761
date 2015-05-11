@@ -2,13 +2,9 @@
 #
 hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
-packages_required = build-essential git flex gettext libncurses5-dev \
-  unzip gawk liblzma-dev u-boot-tools
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd ntfs-3g
+host_packages = build-essential git flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
+openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
 ### mwan3 luci-app-mwan3
-
-final: s_build_openwrt
-	make -C recovery.bin
 
 s_build_openwrt: s_install_feeds
 	@cd $(openwrt_dir); \
@@ -16,8 +12,12 @@ s_build_openwrt: s_install_feeds
 			mv -vf .config .config.bak; \
 			echo "WARNING: .config is updated, backed up as '.config.bak'"; \
 		fi; \
-		cp -vf ../config-hiwifi-hc5761 .config
+		cp -vf ../config-hiwifi-hc5761 .config; \
+		[ -f ../.config.extra ] && cat ../.config.extra >> .config || :
 	make -C $(openwrt_dir) V=s -j4
+
+final: s_build_openwrt
+	make -C recovery.bin
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
@@ -25,7 +25,8 @@ s_install_feeds: s_update_feeds
 	@svn co https://github.com/shadowsocks/shadowsocks-libev.git/tags/v1.6.2/openwrt $(openwrt_dir)/package/shadowsocks
 	@git clone https://github.com/rssnsj/proto-bridge.git -b master $(openwrt_dir)/package/proto-bridge
 	@cd $(openwrt_dir)/package; \
-	 [ -d ../../../hc5761/package/xt_salist -a ! -e xt_salist ] && ln -sf ../../../hc5761/package/xt_salist || :
+	 [ -e rssnsj-packages ] || ln -s ../../packages rssnsj-packages; \
+	 [ -e rssnsj-feeds ] || git clone https://github.com/rssnsj/network-feeds.git rssnsj-feeds
 	@touch s_install_feeds
 
 s_update_feeds: s_hiwifi_patch
@@ -33,7 +34,7 @@ s_update_feeds: s_hiwifi_patch
 	@touch s_update_feeds
 
 s_hiwifi_patch: s_checkout_svn
-	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
+	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
 	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
 	@touch s_hiwifi_patch
 
@@ -46,7 +47,7 @@ s_checkout_svn: s_check_hostdeps
 s_check_hostdeps:
 # 1. Install required host components:
 	@which dpkg >/dev/null 2>&1 || exit 0; \
-	for p in $(packages_required); do \
+	for p in $(host_packages); do \
 		dpkg -s $$p >/dev/null 2>&1 || to_install="$$to_install$$p "; \
 	done; \
 	if [ -n "$$to_install" ]; then \

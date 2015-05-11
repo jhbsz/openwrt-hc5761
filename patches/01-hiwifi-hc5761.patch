@@ -22,7 +22,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,161 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -65,7 +65,6 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				partition@0 {
 +					label = "u-boot";
 +					reg = <0x0 0x30000>;
-+					read-only;
 +				};
 +
 +				partition@30000 {
@@ -77,7 +76,6 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				factory: partition@40000 {
 +					label = "factory";
 +					reg = <0x40000 0x10000>;
-+					read-only;
 +				};
 +
 +				partition@50000 {
@@ -111,16 +109,23 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +		status = "okay";
 +	};
 +
-+	sdhci@10130000 {
-+		status = "okay";
++	ethernet@10100000 {
++		pinctrl-names = "default";
++		pinctrl-0 = <&ephy_pins>;
++		mtd-mac-address = <&bdinfo 0x18a>;
++		ralink,port-map = "wllll";
 +	};
 +
-+	pcie@10140000 {
++	sdhci@10130000 {
 +		status = "okay";
 +	};
 +
 +	wmac@10180000 {
 +		ralink,mtd-eeprom = <&factory 0>;
++	};
++
++	pcie@10140000 {
++		status = "okay";
 +	};
 +
 +	pinctrl {
@@ -133,53 +138,6 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				ralink,group = "pa";
 +				ralink,function = "pa";
 +			};
-+		};
-+	};
-+
-+	ethernet@10100000 {
-+		status = "okay";
-+		mtd-mac-address = <&bdinfo 0x18a>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
-+		ralink,port-map = "wllll";
-+
-+		port@4 {
-+			status = "okay";
-+			phy-handle = <&phy4>;
-+			phy-mode = "rgmii";
-+		};
-+
-+		port@5 {
-+			status = "okay";
-+			phy-handle = <&phy5>;
-+			phy-mode = "rgmii";
-+		};
-+
-+		mdio-bus {
-+			status = "okay";
-+
-+			phy4: ethernet-phy@4 {
-+				reg = <4>;
-+				phy-mode = "rgmii";
-+			};
-+
-+			phy5: ethernet-phy@5 {
-+				reg = <5>;
-+				phy-mode = "rgmii";
-+			};
-+		};
-+	};
-+	
-+	gpio-keys-polled {
-+		compatible = "gpio-keys-polled";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		poll-interval = <20>;
-+		reset {
-+			label = "reset";
-+			gpios = <&gpio0 12 1>;
-+			linux,code = <0x198>;
 +		};
 +	};
 +
@@ -203,6 +161,18 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +		};
 +	};
 +
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <20>;
++		reset {
++			label = "reset";
++			gpios = <&gpio0 12 1>;
++			linux,code = <0x198>;
++		};
++	};
++
 +	gpio_export {
 +		compatible = "gpio-export";
 +		#size-cells = <0>;
@@ -216,8 +186,8 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +};
 Index: target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk
 ===================================================================
---- target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
-+++ target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
+--- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
++++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
 @@ -0,0 +1,20 @@
 +#
 +# Copyright (C) 2011 OpenWrt.org
