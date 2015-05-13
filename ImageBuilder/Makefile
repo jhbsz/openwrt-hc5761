@@ -1,5 +1,5 @@
 
-IMAGEBUILDER ?= $(shell pwd)/OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
+#IMAGEBUILDER ?= $(shell pwd)/OpenWrt-ImageBuilder-ramips_mt7620-for-linux-x86_64
 
 all: .check_deps $(IMAGEBUILDER)/.patched-hc5761
 	make -C $(IMAGEBUILDER) image PROFILE=HiWiFi-HC5761 USER_FILES=$(IMAGEBUILDER)/target/linux/ramips/base-files
