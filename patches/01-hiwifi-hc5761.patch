@@ -268,7 +268,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  		;;
  
 +	hiwifi-hc5761)
-+		__fac_mac=`strings /dev/mtd7 | grep 'fac_mac = ..:..:..:..:..:..'`
++		__fac_mac=`strings /dev/mtd8 | grep 'fac_mac = ..:..:..:..:..:..'`
 +		lan_mac=`expr "$__fac_mac" : '.*\(..:..:..:..:..:..\)' | tr '[A-Z]' '[a-z]'`
 +		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
 +		wan_mac=$(macaddr_add "$lan_mac" 1)
